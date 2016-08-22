@@ -25,6 +25,10 @@ class Kind(Base):
 
     orders = relationship('Order', backref=backref('kind'))
 
+    @property
+    def items(self):
+        return dict(kind=self.kind)
+
 
 class Order(Base):
     __tablename__ = 'order'
