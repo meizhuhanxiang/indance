@@ -37,9 +37,14 @@ class Order(Base):
     status = Column(String(11))
     user_id = Column(String(11), ForeignKey('user.id'))
     kind_id = Column(String(11), ForeignKey('kind.id'))
-    pay_time = Column(Integer)
-    verify_time = Column(Integer)
+    pay_time = Column(DateTime)
+    create_time = Column(DateTime)
+    verify_time = Column(DateTime)
     verify_count = Column(Integer)
+
+    def save(self):
+        db.add(self)
+        db.commit()
 
     @property
     def items(self):
@@ -63,10 +68,10 @@ class Purchase(Base):
     name = Column(String(30))
     price = Column(String(30))
     publisher_id = Column(String(30), ForeignKey('publisher.id'))
-    create_time = Column(String(30))
-    update_time = Column(String(30))
-    start_time = Column(String(30))
-    end_time = Column(Integer)
+    create_time = Column(DateTime)
+    update_time = Column(DateTime)
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
 
     kinds = relationship('Kind', backref=backref('purchase'))
 
