@@ -33,8 +33,10 @@ class SignupHandler(BaseHandler):
                 user.nickname = nickname
                 db.commit()
                 for i in kind_id:
-                    new_order = Order(status=0, user_id=user.id, kind_id=i, create_time=datetime.now())
-                    new_order.save()
+                    order = db.query(Order).filter_by(ser_id=user.id, kind_id=i).first()
+                    if not order:
+                        new_order = Order(status=0, user_id=user.id, kind_id=i, create_time=datetime.now())
+                        new_order.save()
                 self.write({'reason': '', 'res': res})
             else:
                 self.write({'reason': u'无此用户', 'res': res})
