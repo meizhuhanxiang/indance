@@ -66,7 +66,7 @@ class Order(Base):
 
     @property
     def items(self):
-        purchase = db.query(Purchase).filter(id=self.purchase_id).first()
+        purchase = db.query(Purchase).filter_by(id=self.purchase_id).first()
         info = purchase.info if purchase else ''
         return dict(user_id=self.id, status=self.status, kind_id=self.kind_id, pay_time=self.pay_time, purchase_info=info)
 
