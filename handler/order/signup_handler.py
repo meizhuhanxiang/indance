@@ -33,7 +33,7 @@ class SignupHandler(BaseHandler):
                 user.nickname = nickname
                 db.commit()
                 for i in kind_id:
-                    kind = db.query(Kind).filter_by(id=kind_id).first()
+                    kind = db.query(Kind).filter_by(id=i).first()
                     if kind:
                         order = db.query(Order).filter_by(user_id=user.id, kind_id=i).first()
                         if not order:
