@@ -1,5 +1,5 @@
 # coding: utf-8
-from sqlalchemy import Column, DateTime, Integer, String, text, create_engine, ForeignKey
+from sqlalchemy import Column, DateTime, Integer, String, text, Text, create_engine, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref, sessionmaker, scoped_session
 import utils.config
@@ -38,7 +38,6 @@ class Order(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     kind_id = Column(Integer, ForeignKey('kind.id'))
     purchase_id = Column(Integer, ForeignKey('purchase.id'))
-    info = Column(String(255))
     pay_time = Column(DateTime)
     create_time = Column(DateTime)
     verify_time = Column(DateTime)
@@ -70,6 +69,7 @@ class Purchase(Base):
     name = Column(String(30))
     price = Column(String(30))
     publisher_id = Column(String(30), ForeignKey('publisher.id'))
+    info = Column(Text)
     create_time = Column(DateTime)
     update_time = Column(DateTime)
     start_time = Column(DateTime)
