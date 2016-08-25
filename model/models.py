@@ -34,9 +34,11 @@ class Order(Base):
     __tablename__ = 'order'
 
     id = Column(Integer, primary_key=True)
-    status = Column(String(11))
-    user_id = Column(String(11), ForeignKey('user.id'))
-    kind_id = Column(String(11), ForeignKey('kind.id'))
+    status = Column(Integer)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    kind_id = Column(Integer, ForeignKey('kind.id'))
+    purchase_id = Column(Integer, ForeignKey('purchase.id'))
+    info = Column(String(255))
     pay_time = Column(DateTime)
     create_time = Column(DateTime)
     verify_time = Column(DateTime)
@@ -74,6 +76,7 @@ class Purchase(Base):
     end_time = Column(DateTime)
 
     kinds = relationship('Kind', backref=backref('purchase'))
+    orders = relationship('Order', backref=backref('purchase'))
 
 
 class User(Base):
