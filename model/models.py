@@ -30,6 +30,23 @@ class Kind(Base):
         return dict(kind=self.kind)
 
 
+class Purchase(Base):
+    __tablename__ = 'purchase'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(30))
+    price = Column(String(30))
+    publisher_id = Column(String(30), ForeignKey('publisher.id'))
+    info = Column(Text)
+    create_time = Column(DateTime)
+    update_time = Column(DateTime)
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
+
+    kinds = relationship('Kind', backref=backref('purchase'))
+    orders = relationship('Order', backref=backref('purchase'))
+
+
 class Order(Base):
     __tablename__ = 'order'
 
@@ -49,7 +66,9 @@ class Order(Base):
 
     @property
     def items(self):
-        return dict(user_id=self.id, status=self.status, kind_id=self.kind_id, pay_time=self.pay_time, purchase_info=self.purchase.info)
+        purchase = db.query(Purchase).filter(id=self.purchase_id).first()
+        info = purchase.info if purchase else ''
+        return dict(user_id=self.id, status=self.status, kind_id=self.kind_id, pay_time=self.pay_time, purchase_info=info)
 
 
 class Publisher(Base):
@@ -60,23 +79,6 @@ class Publisher(Base):
     city = Column(String(30))
 
     purchases = relationship('Purchase', backref=backref('publisher'))
-
-
-class Purchase(Base):
-    __tablename__ = 'purchase'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(30))
-    price = Column(String(30))
-    publisher_id = Column(String(30), ForeignKey('publisher.id'))
-    info = Column(Text)
-    create_time = Column(DateTime)
-    update_time = Column(DateTime)
-    start_time = Column(DateTime)
-    end_time = Column(DateTime)
-
-    kinds = relationship('Kind', backref=backref('purchase'))
-    orders = relationship('Order', backref=backref('purchase'))
 
 
 class User(Base):
