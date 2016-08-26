@@ -1,0 +1,3 @@
+[submodule "wechat-python-sdk"]
+	path = wechat-python-sdk
+	url = git@github.com:meizhuhanxiang/wechat-python-sdk.git
