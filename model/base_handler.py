@@ -59,7 +59,6 @@ class BaseDB(object):
             return conn, cursor
 
     def fetch_all(self, sql, args=[], cursor_type='list'):
-        conn = cursor = None
         try:
             conn, cursor = self.get_cursor(cursor_type)
             cursor.execute(sql, args)
@@ -67,8 +66,3 @@ class BaseDB(object):
             return list(res)
         except Exception, e:
             raise DBException(e)
-        finally:
-            if cursor:
-                cursor.close()
-            if conn:
-                conn.close()

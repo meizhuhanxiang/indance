@@ -5,9 +5,8 @@
 @author:
 @time: 2016/8/23 18:54
 """
-
-import json
-import tornado
+from utils.code import *
+from utils.wechat import oauth
 from datetime import datetime
 
 from model.models import db, Order, User, Purchase
@@ -15,11 +14,12 @@ from handler.base.base_handler import BaseHandler
 
 
 class VerifyHandler(BaseHandler):
+    @oauth
     def get(self):
         open_id = self.get_argument('open_id', None)
         kind_id = self.get_argument('kind_id', None)
         # 参数验证 身份验证
-
+        code = SUCCESS
         if kind_id and open_id:
             user = db.query(User).filter_by(open_id=open_id).first()
             if user:
@@ -27,14 +27,13 @@ class VerifyHandler(BaseHandler):
                 if order:
                     order.verify_count += 1
                     order.verify_time = datetime.now()
-                    (res, reason) = (1, u'验证通过') if order.status == 1 else (0, u"支付未完成")
+                    if order.status != 1:
+                        code = ORDER_NO_PAY
                 else:
-                    res, reason = 0, u'无此比赛舞种'
-
+                    code = ORDER_DANCE_KIND_NULL
             else:
-                res, reason = 0, u'无此用户'
+                code = USER_NO_EXIST
         else:
-            # 返回数据，如果reason为空则表示成功，否则表示出错
-            res, reason = 0, u'参数错误'
+            code = ARGUMENT_ILLEGAL
 
-        self.write({'res': res, 'reason': reason})
+        self.write_res(code)

@@ -11,6 +11,7 @@ import tornado.httpserver
 import utils.test
 import utils.config
 import utils.logger
+from utils import session
 from optparse import OptionParser
 
 reload(sys)
@@ -22,6 +23,8 @@ class OpenDSApplication(tornado.web.Application):
         self.logger = utils.logger.api_logger()
         handlers = self.load_handlers(api_entry)
         super(OpenDSApplication, self).__init__(handlers, **settings)
+        self.session_manager = session.SessionManager(settings["session_secret"], settings["store_options"],
+                                                      settings["session_timeout"])
 
     def load_handlers(self, m):
         handlers = []
@@ -35,7 +38,7 @@ class OpenDSApplication(tornado.web.Application):
                     __import__(module)
                     handlers.append((r"/api/%s/%s" % (sub_module, handler_split[0]), "%s.%s" % (module, attr)))
                     sys.stderr.write("routing uri %s to handler %s\n" % (
-                        "/%s/%s" % (sub_module, handler_split[0]), "%s.%s" % (module, attr)))
+                        "/api/%s/%s" % (sub_module, handler_split[0]), "%s.%s" % (module, attr)))
         return handlers
 
     def log_request(self, handler):
@@ -56,9 +59,18 @@ def main():
     debug_mode = int(utils.config.get('global', 'debug'))
 
     sys.stderr.write("listen server on port %s ...\n" % port)
-    application = OpenDSApplication(handler, **{
-        'debug': True if debug_mode else False,
-    })
+    settings = dict(
+        debug=True if debug_mode else False,
+        cookie_secret="e446976943b4e8442f099fed1f3fea28462d5832f483a0ed9a3d5d3859f==78d",
+        session_secret="3cdcb1f00803b6e78ab50b466a40b9977db396840c28307f428b25e2277f1bcc",
+        session_timeout=60,
+        store_options={
+            'redis_host': '127.0.0.1',
+            'redis_port': 6379,
+            'redis_pass': '',
+        },
+    )
+    application = OpenDSApplication(handler, **settings)
     server = tornado.httpserver.HTTPServer(application)
     server.bind(port)
     server.start(1 if debug_mode else 15)

@@ -6,12 +6,14 @@
 @time: 2016/8/22 16:29
 """
 
-import json
+from utils.code import *
+from utils.wechat import oauth
 from model.models import db, Order, User, Purchase
 from handler.base.base_handler import BaseHandler
 
 
 class AllHandler(BaseHandler):
+    @oauth
     def get(self):
         res = []
         open_id = self.get_argument('open_id', None)
@@ -28,5 +30,4 @@ class AllHandler(BaseHandler):
                 for i in all_orders:
                     res.append(i.items)
 
-        # 返回数据，如果reason为空则表示成功，否则表示出错
-        self.write({'reason': '', 'res': res})
+        self.write_res(SUCCESS, res=res)

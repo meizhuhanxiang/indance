@@ -6,17 +6,19 @@
 @time: 2016/8/23 18:54
 """
 
-import json
 import tornado
 from datetime import datetime
-
+from utils.code import *
+from utils.wechat import oauth
 from model.models import db, Order, User, Purchase, Kind
 from handler.base.base_handler import BaseHandler
 
 
 class SignupHandler(BaseHandler):
+    @oauth
     def post(self):
         res = []
+        code = SUCCESS
         arguments = tornado.escape.json_decode(self.request.body)
         kind_id = arguments.get('kind_id', [])
         open_id = arguments.get('open_id', None)
@@ -37,14 +39,15 @@ class SignupHandler(BaseHandler):
                     if kind:
                         order = db.query(Order).filter_by(user_id=user.id, kind_id=i).first()
                         if not order:
-                            new_order = Order(status=0, user_id=user.id, kind_id=i, purchase_id=kind.purchase_id, create_time=datetime.now())
+                            new_order = Order(status=0, user_id=user.id, kind_id=i, purchase_id=kind.purchase_id,
+                                              create_time=datetime.now())
                             new_order.save()
                     else:
-                        self.write({'reason': u'无此舞种', 'res': res})
-                self.write({'reason': '', 'res': res})
+                        code = ORDER_DANCE_KIND_NULL
             else:
-                self.write({'reason': u'无此用户', 'res': res})
+                code = USER_NO_EXIST
 
         else:
-            # 返回数据，如果reason为空则表示成功，否则表示出错
-            self.write({'reason': u'参数错误', 'res': res})
+            code = ARGUMENT_ILLEGAL
+
+        self.write_res(code)

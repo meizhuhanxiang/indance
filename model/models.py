@@ -66,7 +66,8 @@ class Order(Base):
 
     @property
     def items(self):
-        return dict(user_id=self.id, status=self.status, kind_id=self.kind_id, pay_time=self.pay_time, purchase_info=self.purchase.info)
+        return dict(user_id=self.id, status=self.status, kind_id=self.kind_id, pay_time=self.pay_time,
+                    purchase_info=self.purchase.info)
 
 
 class Publisher(Base):
@@ -89,9 +90,9 @@ class User(Base):
     province = Column(String(20), nullable=False, server_default=text("''"))
     city = Column(String(20), nullable=False, server_default=text("''"))
     country = Column(String(20), nullable=False, server_default=text("''"))
-    profile = Column(String(150), nullable=False, server_default=text("''"))
+    head_img_url = Column(String(150), nullable=False, server_default=text("''"))
     privilege = Column(String(40), nullable=False, server_default=text("''"))
-    union_id = Column(String(30), nullable=False, server_default=text("''"))
+    union_id = Column(String(30), server_default=text("''"))
     is_v = Column(Integer, nullable=False, server_default=text("'0'"))
     name = Column(String(16))
     job = Column(String(30))
@@ -102,7 +103,3 @@ class User(Base):
     create_time = Column(DateTime, nullable=False, server_default=text("'0000-00-00 00:00:00'"))
 
     orders = relationship('Order', backref=backref('user'))
-
-
-
-pass
