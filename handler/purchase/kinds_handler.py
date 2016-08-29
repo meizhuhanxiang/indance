@@ -22,4 +22,4 @@ class KindsHandler(BaseHandler):
             for i in all_kinds:
                 res.append(i.items)
         res = self.get_res(SUCCESS, res=res)
-        self.render('purchase/kinds.html', res=res)
+        self.render('purchase/kinds.html', **res)

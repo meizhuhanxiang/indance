@@ -12,4 +12,4 @@ class IndexHandler(BaseHandler):
         args = self.get_need_args('purchase_id')
         purchase_id = urllib2.unquote(args['purchase_id'])
         res = self.get_res(SUCCESS, res={"purchase_id": purchase_id})
-        self.render('purchase/index.html', res=res)
+        self.render('purchase/index.html', **res)
