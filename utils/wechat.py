@@ -1,7 +1,8 @@
 # coding: utf-8
+import os
 import time
 import hashlib
-import requests
+import urllib
 import functools
 import urllib2
 from model.indance_handler import InDanceDB
@@ -21,7 +22,11 @@ def oauth(method):
     @functools.wraps(method)
     def warpper(self, *args, **kwargs):
         if not self.session.has_key('open_id'):
-            self.write_res(WECHAT_NO_LOGIN)
+            self.session['callback_url'] = self.request.url
+            self.session.save()
+            callback_url = urllib.quote_plus(os.path.join(self.domain, 'wechat/callback'))
+            urls = self.wechat.get_oauth_url(callback_url)
+            self.redirect(urls)
         else:
             method(self, *args, **kwargs)
 
@@ -33,7 +38,6 @@ class WeChat(object):
         self.appid = utils.config.get('wechat', 'appid')
         self.token = utils.config.get('wechat', 'token')
         self.appsecret = utils.config.get('wechat', 'appsecret')
-        self.domain = utils.config.get('global', 'domain')
 
     def url_get(self, urls):
         req = urllib2.Request(urls)
@@ -50,9 +54,9 @@ class WeChat(object):
                    'appid=%s&secret=%s&code=%s&grant_type=authorization_code' % (self.appid, self.appsecret, code)
         res = self.url_get(code_url)
         access_token = res['access_token']
-        open_id = res['openid']
+        union_id = res['unionid']
         self.access_token = access_token
-        self.open_id = open_id
+        self.union_id = union_id
         return access_token
 
     def get_user_info(self):

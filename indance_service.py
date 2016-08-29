@@ -36,7 +36,7 @@ class IndanceApplication(tornado.web.Application):
                     module = "%s.%s.%s" % (m.__name__, sub_module, handler_name)
                     attr = "%sHandler" % handler_split[0].capitalize()
                     __import__(module)
-                    handlers.append((r"/api/%s/%s" % (sub_module, handler_split[0]), "%s.%s" % (module, attr)))
+                    handlers.append((r"/%s/%s" % (sub_module, handler_split[0]), "%s.%s" % (module, attr)))
                     sys.stderr.write("routing uri %s to handler %s\n" % (
                         "/api/%s/%s" % (sub_module, handler_split[0]), "%s.%s" % (module, attr)))
         return handlers

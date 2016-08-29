@@ -12,12 +12,11 @@ class CallbackHandler(BaseHandler):
         args = self.get_need_args('code', 'state')
         code = args['code']
         state = args['state']
-        callback_url = self.session['callback_url']
+        current_url = self.session['current_url']
         self.wechat.get_access_token(code)
         wechat_user_info = self.wechat.get_user_info()
-        self.loger.info(wechat_user_info)
         self.db.save_wechat_user_info(wechat_user_info)
-        self.session['open_id'] = self.wechat.open_id
-        self.session['callback_url'] = None
+        self.session['union_id'] = self.wechat.union_id
+        self.session['current_url'] = None
         self.session.save()
-        self.redirect(callback_url)
+        self.redirect(current_url)

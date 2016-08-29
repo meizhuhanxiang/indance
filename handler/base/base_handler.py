@@ -4,6 +4,7 @@ import urllib2
 import tornado.web
 import tornado.ioloop
 import tornado.options
+import utils.config
 import tornado.httpserver
 from utils.code import *
 from utils import session
@@ -26,6 +27,7 @@ class BaseHandler(tornado.web.RequestHandler):
         self.reason = ''
         self.session = session.Session(self.application.session_manager, self)
         self.wechat = WeChat()
+        self.domain = utils.config.get('global', 'domain')
         self.loger = runtime_logger()
         self.db = InDanceDB()
 
