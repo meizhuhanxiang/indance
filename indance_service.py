@@ -8,7 +8,6 @@ import handler
 import tornado.web
 import tornado.ioloop
 import tornado.httpserver
-import utils.test
 import utils.config
 import utils.logger
 from utils import session
@@ -38,7 +37,9 @@ class IndanceApplication(tornado.web.Application):
                     __import__(module)
                     handlers.append((r"/%s/%s" % (sub_module, handler_split[0]), "%s.%s" % (module, attr)))
                     sys.stderr.write("routing uri %s to handler %s\n" % (
-                        "/api/%s/%s" % (sub_module, handler_split[0]), "%s.%s" % (module, attr)))
+                        "/%s/%s" % (sub_module, handler_split[0]), "%s.%s" % (module, attr)))
+        handlers.append((r"/view/(.*)", tornado.web.StaticFileHandler,
+                         {"path": os.path.join(utils.config.get("global", "ui_path"), "view")}))
         return handlers
 
     def log_request(self, handler):

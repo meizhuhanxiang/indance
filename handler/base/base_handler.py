@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import json
 import urllib2
 import tornado.web
 import tornado.ioloop
@@ -19,7 +20,7 @@ class BaseHandler(tornado.web.RequestHandler):
         # self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
         # self.set_header('Access-Control-Max-Age', 1000)
         # self.set_header('Access-Control-Allow-Headers', '*')
-        # self.set_header('Content-type', 'application/json')
+        self.set_header('Content-type', 'text/html;charset=utf-8')
         pass
 
     def initialize(self):
@@ -41,9 +42,13 @@ class BaseHandler(tornado.web.RequestHandler):
         return res
 
     def write_res(self, code, msg='', res={}):
+        res = self.get_res(code, msg, res)
+        self.write(json.dumps(res).decode('unicode-escape'))
+
+    def get_res(self, code, msg='', res={}):
         if not msg:
             msg = ERROR_MAP.get(code, '')
-        self.write(json.dumps({'code': code, 'msg': msg, 'res': res}).decode('unicode-escape'))
+        return {'code': code, 'msg': msg, 'res': res}
 
     def url_get(self, urls):
         req = urllib2.Request(urls)

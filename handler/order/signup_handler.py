@@ -21,9 +21,9 @@ class SignupHandler(BaseHandler):
         code = SUCCESS
         arguments = tornado.escape.json_decode(self.request.body)
         kind_id = arguments.get('kind_id', [])
-        union_id = arguments.get('union_id', None)
         phone = arguments.get('phone', '')
         name = arguments.get('name', '')
+        union_id = self.session.get('union_id', '')
         # 参数验证 身份验证
 
 

@@ -27,7 +27,7 @@ class Kind(Base):
 
     @property
     def items(self):
-        return dict(kind=self.kind)
+        return dict(kind=self.kind, kind_id=self.id, purchase_id=self.purchase_id)
 
 
 class Purchase(Base):
@@ -66,7 +66,7 @@ class Order(Base):
 
     @property
     def items(self):
-        return dict(user_id=self.id, status=self.status, kind_id=self.kind_id, pay_time=self.pay_time,
+        return dict(user_id=self.user_id, status=self.status, kind_id=self.kind_id, pay_time=self.pay_time,
                     purchase_info=self.purchase.info)
 
 

@@ -5,6 +5,7 @@ import hashlib
 import urllib
 import functools
 import urllib2
+import json
 from model.indance_handler import InDanceDB
 import utils.config
 from utils.code import *
@@ -21,8 +22,8 @@ NONCESTR = 'Wm3WZYTPz0wzccnW'
 def oauth(method):
     @functools.wraps(method)
     def warpper(self, *args, **kwargs):
-        if not self.session.has_key('open_id'):
-            self.session['callback_url'] = self.request.url
+        if not self.session.has_key('union_id'):
+            self.session['current_url'] = self.request.uri
             self.session.save()
             callback_url = urllib.quote_plus(os.path.join(self.domain, 'wechat/callback'))
             urls = self.wechat.get_oauth_url(callback_url)
@@ -55,6 +56,7 @@ class WeChat(object):
         res = self.url_get(code_url)
         access_token = res['access_token']
         union_id = res['unionid']
+        self.open_id = res['openid']
         self.access_token = access_token
         self.union_id = union_id
         return access_token
@@ -123,3 +125,6 @@ class WeChat(object):
         # def conf_menu_share():
         #     url = '%s/?union_id=%s' % (DOMAIN, session.get('union_id', ''))
         #     return get_menu_share_conf(url)
+
+    def pay_unifiedorder(self):
+        urls = 'https://api.mch.weixin.qq.com/pay/unifiedorder'

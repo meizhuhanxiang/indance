@@ -21,5 +21,5 @@ class KindsHandler(BaseHandler):
             all_kinds = db.query(Kind).join(Purchase.kinds).filter(Purchase.id == purchase_id).all()
             for i in all_kinds:
                 res.append(i.items)
-
-        self.write_res(SUCCESS, res=res)
+        res = self.get_res(SUCCESS, res=res)
+        self.render('purchase/kinds.html', res=res)
