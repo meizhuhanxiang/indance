@@ -1,11 +1,23 @@
 # -*- coding: utf-8 -*-
+import qrcode
+import base64
+from StringIO import StringIO
+
 __author__ = 'guoguangchuan'
 
-from utils.global_conf import *
 
+def get_qrcode(data):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+    img = qr.make_image()
+    img_io = StringIO()
+    img.save(img_io, 'PNG')
+    img_io.seek(0)
 
-def get_remain_cheer_num(cheer_num):
-    remain_cheer_num = SATISFY_CHEER_NUM - cheer_num
-    if remain_cheer_num < 0:
-        remain_cheer_num = 0
-    return remain_cheer_num
+    return img_io.getvalue()

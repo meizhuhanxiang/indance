@@ -14,7 +14,7 @@ from model.models import db, Order, User, Purchase, Kind
 from handler.base.base_handler import BaseHandler
 
 
-class SignupHandler(BaseHandler):
+class PayHandler(BaseHandler):
     @oauth
     def post(self):
         res = []
@@ -22,8 +22,8 @@ class SignupHandler(BaseHandler):
         arguments = tornado.escape.json_decode(self.request.body)
         kind_id = arguments.get('kind_id', [])
         union_id = arguments.get('union_id', None)
-        phone = arguments.get('phone', '')
-        name = arguments.get('name', '')
+        phone = arguments.get('phone', "")
+        nickname = arguments.get('nickname', "")
         # 参数验证 身份验证
 
 
@@ -32,7 +32,7 @@ class SignupHandler(BaseHandler):
             user = db.query(User).filter_by(union_id=union_id).first()
             if user:
                 user.phone = phone
-                user.name = name
+                user.nickname = nickname
                 db.commit()
                 for i in kind_id:
                     kind = db.query(Kind).filter_by(id=i).first()

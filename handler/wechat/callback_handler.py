@@ -1,9 +1,6 @@
 # coding: utf-8
 import requests
-import utils.config
 from handler.base.base_handler import BaseHandler
-from utils.logger import runtime_logger
-from model.indance_handler import InDanceDB
 
 requests.packages.urllib3.disable_warnings()
 __author__ = 'guoguangchuan'

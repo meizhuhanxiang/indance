@@ -71,6 +71,7 @@ class WeChat(object):
             'country': res['country'],
             'head_img_url': res['headimgurl'],
             'privilege': res['privilege'],
+            'union_id': res['unionid']
         }
         self.user_info = user_info
         return user_info

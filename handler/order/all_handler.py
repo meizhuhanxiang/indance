@@ -16,11 +16,11 @@ class AllHandler(BaseHandler):
     @oauth
     def get(self):
         res = []
-        open_id = self.get_argument('open_id', None)
+        union_id = self.get_argument('union_id', None)
         purchase_id = self.get_argument('purchase_id', None)
 
-        if open_id:
-            user = db.query(User).filter_by(open_id=open_id).first()
+        if union_id:
+            user = db.query(User).filter_by(union_id=union_id).first()
             if user:
                 if purchase_id:
                     all_orders = db.query(Order).filter_by(user_id=user.id, purchase_id=purchase_id).all()

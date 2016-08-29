@@ -1,9 +1,7 @@
 # coding: utf-8
-import json
 import os
 from utils.code import *
 import urllib
-import utils.config
 from handler.base.base_handler import BaseHandler
 
 __author__ = 'guoguangchuan'

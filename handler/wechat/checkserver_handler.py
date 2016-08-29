@@ -1,5 +1,4 @@
 # coding: utf-8
-import json
 import utils.config
 from wechatpy.utils import check_signature
 from wechatpy.exceptions import InvalidSignatureException

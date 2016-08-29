@@ -18,11 +18,11 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 
-class OpenDSApplication(tornado.web.Application):
+class IndanceApplication(tornado.web.Application):
     def __init__(self, api_entry, **settings):
         self.logger = utils.logger.api_logger()
         handlers = self.load_handlers(api_entry)
-        super(OpenDSApplication, self).__init__(handlers, **settings)
+        super(IndanceApplication, self).__init__(handlers, **settings)
         self.session_manager = session.SessionManager(settings["session_secret"], settings["store_options"],
                                                       settings["session_timeout"])
 
@@ -69,8 +69,10 @@ def main():
             'redis_port': 6379,
             'redis_pass': '',
         },
+        static_path=os.path.join(utils.config.get("global", "ui_path"), "static"),
+        template_path=os.path.join(utils.config.get("global", "ui_path"), "templates")
     )
-    application = OpenDSApplication(handler, **settings)
+    application = IndanceApplication(handler, **settings)
     server = tornado.httpserver.HTTPServer(application)
     server.bind(port)
     server.start(1 if debug_mode else 15)

@@ -22,5 +22,4 @@ class KindsHandler(BaseHandler):
             for i in all_kinds:
                 res.append(i.items)
 
-        # 返回数据，如果reason为空则表示成功，否则表示出错
         self.write_res(SUCCESS, res=res)
