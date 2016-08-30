@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import qrcode
 import base64
+import uuid
 from StringIO import StringIO
 
 __author__ = 'guoguangchuan'
@@ -21,3 +22,7 @@ def get_qrcode(data):
     img_io.seek(0)
 
     return img_io.getvalue()
+
+
+def get_uuid():
+    return str(uuid.uuid1()).replace('-', '')

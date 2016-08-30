@@ -1,5 +1,5 @@
 # coding: utf-8
-from sqlalchemy import Column, DateTime, Integer, String, text, Text, create_engine, ForeignKey
+from sqlalchemy import Column, DateTime, Integer, String, text, Text, create_engine, ForeignKey, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref, sessionmaker, scoped_session
 import utils.config
@@ -22,7 +22,7 @@ class Kind(Base):
     id = Column(Integer, primary_key=True)
     purchase_id = Column(Integer, ForeignKey('purchase.id'))
     kind = Column(String(11))
-
+    price = Column(Float(2))
     orders = relationship('Order', backref=backref('kind'))
 
     @property
@@ -35,13 +35,13 @@ class Purchase(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(30))
-    price = Column(String(30))
     publisher_id = Column(String(30), ForeignKey('publisher.id'))
     info = Column(Text)
     create_time = Column(DateTime)
     update_time = Column(DateTime)
     start_time = Column(DateTime)
     end_time = Column(DateTime)
+    body = Column(String(64))
 
     kinds = relationship('Kind', backref=backref('purchase'))
     orders = relationship('Order', backref=backref('purchase'))
@@ -59,6 +59,8 @@ class Order(Base):
     create_time = Column(DateTime)
     verify_time = Column(DateTime)
     verify_count = Column(Integer)
+    info = Column(String(255))
+    out_trade_no = Column(String(32))
 
     def save(self):
         db.add(self)
@@ -99,6 +101,7 @@ class User(Base):
     company = Column(String(30))
     phone = Column(Integer)
     email = Column(String(30))
+    wechat_no = Column(String(32))
     update_time = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
     create_time = Column(DateTime, nullable=False, server_default=text("'0000-00-00 00:00:00'"))
 
