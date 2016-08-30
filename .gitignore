@@ -66,8 +66,7 @@ htmlcov/
 .coverage.*
 .cache
 nosetests.xml
-/log/*
-!/log/.gitkeep
+/log
 /www/log
 coverage.xml
 *,cover
