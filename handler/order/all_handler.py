@@ -16,7 +16,7 @@ class AllHandler(BaseHandler):
     @oauth
     def get(self):
         res = []
-        union_id = self.get_argument('union_id', None)
+        union_id = self.session.get('union_id', None)
         purchase_id = self.get_argument('purchase_id', None)
 
         if union_id:
