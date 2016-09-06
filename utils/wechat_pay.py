@@ -41,6 +41,8 @@ import hashlib
 import threading
 from urllib import quote
 import utils.config
+from utils.code import *
+from utils.logger import runtime_logger
 import xml.etree.ElementTree as ET
 
 try:
@@ -59,14 +61,14 @@ class WxPayConf_pub(object):
     # JSAPI接口中获取openid，审核后在公众平台开启开发模式后可查看
     APPSECRET = utils.config.get('wechat', 'appsecret')
     # 受理商ID，身份标识
-    MCHID = "18888887"
+    MCHID = utils.config.get('wechat', 'mchid')
     # 商户支付密钥Key。审核通过后，在微信发送的邮件中查看
-    KEY = "48888888888888888888888888888886"
+    KEY = utils.config.get('wechat', 'key')
 
 
     # =======【异步通知url设置】===================================
     # 异步通知url，商户根据实际开发过程设定
-    NOTIFY_URL = "http://******.com/payback"
+    NOTIFY_URL = utils.config.get('wechat', 'notify_url')
 
     # =======【JSAPI路径设置】===================================
     # 获取access_token过程中的跳转uri，通过跳转将code传入jsapi支付页面
@@ -74,8 +76,8 @@ class WxPayConf_pub(object):
 
     # =======【证书路径设置】=====================================
     # 证书路径,注意应该填写绝对路径
-    SSLCERT_PATH = "/******/cacert/apiclient_cert.pem"
-    SSLKEY_PATH = "/******/cacert/apiclient_key.pem"
+    SSLCERT_PATH = utils.config.get('wechat', 'sslcert_path')
+    SSLKEY_PATH = utils.config.get('wechat', 'sslkey_path')
 
     # =======【curl超时设置】===================================
     CURL_TIMEOUT = 30
@@ -208,10 +210,12 @@ class Common_util_pub(object):
         """array转xml"""
         xml = ["<xml>"]
         for k, v in arr.iteritems():
+            # xml.append("<{0}>{1}</{0}>".format(k, v))
             if v.isdigit():
                 xml.append("<{0}>{1}</{0}>".format(k, v))
             else:
                 xml.append("<{0}><![CDATA[{1}]]></{0}>".format(k, v))
+                # xml.append("<{0}>{1}</{0}>".format(k, v))
         xml.append("</xml>")
         return "".join(xml)
 
@@ -307,7 +311,9 @@ class Wxpay_client_pub(Common_util_pub):
 
     def setParameter(self, parameter, parameterValue):
         """设置请求参数"""
-        self.parameters[self.trimString(parameter)] = self.trimString(parameterValue)
+        parameter = self.trimString(parameter)
+        parameterValue = self.trimString(parameterValue)
+        self.parameters[parameter] = parameterValue
 
     def createXml(self):
         """设置标配的请求参数，生成签名，生成接口参数xml"""
@@ -320,6 +326,7 @@ class Wxpay_client_pub(Common_util_pub):
     def postXml(self):
         """post请求xml"""
         xml = self.createXml()
+        runtime_logger().info(xml)
         self.response = self.postXmlCurl(xml, self.url, self.curl_timeout)
         return self.response
 
@@ -362,12 +369,33 @@ class UnifiedOrder_pub(Wxpay_client_pub):
         self.parameters["sign"] = self.getSign(self.parameters)  # 签名
         return self.arrayToXml(self.parameters)
 
-    def getPrepayId(self):
+    def getJSApiParameters(self):
         """获取prepay_id"""
         self.postXml()
         self.result = self.xmlToArray(self.response)
-        prepay_id = self.result["prepay_id"]
-        return prepay_id
+        runtime_logger().info(self.result)
+        return_code = self.result['return_code']
+        code = SUCCESS
+        msg = 'SUCCESS'
+        res = {}
+        return_msg = self.result['return_msg']
+        if return_code != 'SUCCESS':
+            code = WECHAT_UNIFIED_ERROR
+            msg = return_msg
+        else:
+            result_code = self.result['result_code']
+            if result_code != 'SUCCESS':
+                code = WECHAT_UNIFIED_ERROR
+                msg = self.result['err_code_des']
+            else:
+                res["appId"] = WxPayConf_pub.APPID
+                timeStamp = int(time.time())
+                res["timeStamp"] = "{0}".format(timeStamp)
+                res["nonceStr"] = self.createNoncestr()
+                res["package"] = "prepay_id={0}".format(self.result['prepay_id'])
+                res["signType"] = "MD5"
+                res["paySign"] = self.getSign(res)
+        return {'code': code, 'msg': msg, 'res': res}
 
 
 class OrderQuery_pub(Wxpay_client_pub):
@@ -393,6 +421,9 @@ class OrderQuery_pub(Wxpay_client_pub):
         self.parameters["sign"] = self.getSign(self.parameters)  # 签名
         return self.arrayToXml(self.parameters)
 
+    def getQueryResult(self):
+        self.postXml()
+        self.result = self.xmlToArray(self.response)
 
 class Refund_pub(Wxpay_client_pub):
     """退款申请接口"""

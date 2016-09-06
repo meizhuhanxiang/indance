@@ -8,6 +8,7 @@ import urllib2
 import json
 from model.indance_handler import InDanceDB
 import utils.config
+import requests
 from utils.code import *
 from utils.logger import runtime_logger
 
@@ -39,9 +40,12 @@ class WeChat(object):
         self.appid = utils.config.get('wechat', 'appid')
         self.token = utils.config.get('wechat', 'token')
         self.appsecret = utils.config.get('wechat', 'appsecret')
+        self.mchid = utils.config.get('wechat', 'mchid')
+        self.notify_url = utils.config.get('wechat', 'notify_url')
+        self.share_domain = utils.config.get('global', 'share_domain')
 
-    def url_get(self, urls):
-        req = urllib2.Request(urls)
+    def url_get(self, urls, data=None):
+        req = urllib2.Request(urls, data=data)
         response = urllib2.urlopen(req)
         return json.loads(response.read())
 
@@ -55,6 +59,7 @@ class WeChat(object):
                    'appid=%s&secret=%s&code=%s&grant_type=authorization_code' % (self.appid, self.appsecret, code)
         res = self.url_get(code_url)
         access_token = res['access_token']
+        print 'first get', access_token
         union_id = res['unionid']
         self.open_id = res['openid']
         self.access_token = access_token
@@ -128,3 +133,49 @@ class WeChat(object):
 
     def pay_unifiedorder(self):
         urls = 'https://api.mch.weixin.qq.com/pay/unifiedorder'
+
+    def send_template(self, **args):
+        access_token = args.get('access_token', '')
+        open_id = args.get('open_id', '')
+        db = args.get('db', '')
+        first = args.get('first', '')
+        keyword1 = args.get('keyword1', '')
+        keyword2 = args.get('keyword2', '')
+        keyword3 = args.get('keyword3', '')
+        keyword4 = args.get('keyword4', '')
+        remart = args.get('remark', '')
+        print 'insend_template', access_token
+        urls = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s' % self.get_base_access_token(db)
+        data = {
+            "touser": open_id,
+            "template_id": "0vii4KFKNwCc-J_SG9hLswhnxhJzq7HghXWTJPv2oZU",
+            "url": "http://test.indance.gsteps.cn/purchase/index?purchase_id=1",
+            "topcolor": "#FF0000",
+            "data": {
+                "first": {
+                    "value": first,
+                    "color": "#173177"
+                },
+                "keyword1": {
+                    "value": keyword1,
+                    "color": "#173177"
+                },
+                "keyword2": {
+                    "value": keyword2,
+                    "color": "#173177"
+                },
+                "keyword3": {
+                    "value": keyword3,
+                    "color": "#173177"
+                },
+                "keyword4": {
+                    "value": keyword4,
+                    "color": "#173177"
+                },
+                "remark": {
+                    "value": remart,
+                    "color": "#173177"
+                }
+            }
+        }
+        return self.url_get(urls, json.dumps(data))

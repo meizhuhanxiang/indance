@@ -12,6 +12,7 @@ from utils import session
 from utils.wechat import WeChat
 from model.indance_handler import InDanceDB
 from utils.logger import runtime_logger
+import xml.etree.ElementTree as ET
 
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -54,3 +55,12 @@ class BaseHandler(tornado.web.RequestHandler):
         req = urllib2.Request(urls)
         response = urllib2.urlopen(req)
         return json.loads(response.read())
+
+    def xmlToArray(self, xml):
+        """将xml转为array"""
+        array_data = {}
+        root = ET.fromstring(xml)
+        for child in root:
+            value = child.text
+            array_data[child.tag] = value
+        return array_data

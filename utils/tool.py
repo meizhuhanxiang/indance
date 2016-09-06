@@ -2,6 +2,10 @@
 import qrcode
 import base64
 import uuid
+import functools
+from utils.code import *
+import traceback
+from utils.logger import runtime_logger
 from StringIO import StringIO
 
 __author__ = 'guoguangchuan'
@@ -26,3 +30,15 @@ def get_qrcode(data):
 
 def get_uuid():
     return str(uuid.uuid1()).replace('-', '')
+
+
+def excetion(method):
+    @functools.wraps(method)
+    def warpper(self, *args, **kwargs):
+        try:
+            method(self, *args, **kwargs)
+        except Exception, e:
+            runtime_logger().error(traceback.format_exc())
+            self.write_res(INTERNAL_ERROR, msg=str(e))
+
+    return warpper

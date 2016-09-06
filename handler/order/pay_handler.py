@@ -10,6 +10,7 @@ import tornado
 from datetime import datetime
 from utils.code import *
 from utils.wechat import oauth
+
 from model.models import db, Order, User, Purchase, Kind
 from handler.base.base_handler import BaseHandler
 
@@ -17,37 +18,13 @@ from handler.base.base_handler import BaseHandler
 class PayHandler(BaseHandler):
     @oauth
     def post(self):
-        res = []
-        code = SUCCESS
-        arguments = tornado.escape.json_decode(self.request.body)
-        kind_id = arguments.get('kind_id', [])
-        union_id = arguments.get('union_id', None)
-        phone = arguments.get('phone', "")
-        nickname = arguments.get('nickname', "")
-        # 参数验证 身份验证
-
-
-        # 新建订单
-        if kind_id and union_id:
-            user = db.query(User).filter_by(union_id=union_id).first()
-            if user:
-                user.phone = phone
-                user.nickname = nickname
-                db.commit()
-                for i in kind_id:
-                    kind = db.query(Kind).filter_by(id=i).first()
-                    if kind:
-                        order = db.query(Order).filter_by(user_id=user.id, kind_id=i).first()
-                        if not order:
-                            new_order = Order(status=0, user_id=user.id, kind_id=i, purchase_id=kind.purchase_id,
-                                              create_time=datetime.now())
-                            new_order.save()
-                    else:
-                        code = ORDER_DANCE_KIND_NULL
-            else:
-                code = USER_NO_EXIST
-
-        else:
-            code = ARGUMENT_ILLEGAL
+        unified = UnifiedOrder_pub()
+        unified.setParameter('body', str(purchase.body))
+        unified.setParameter('out_trade_no', str(out_trade_no))
+        unified.setParameter('total_fee', str(total_fee))
+        unified.setParameter('notify_url', self.wechat.notify_url)
+        unified.setParameter('trade_type', 'JSAPI')
+        unified.setParameter('openid', self.session['open_id'])
+        jsapi_res = unified.getJSApiParameters()
 
         self.write_res(code)

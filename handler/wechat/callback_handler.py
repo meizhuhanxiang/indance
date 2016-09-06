@@ -17,6 +17,9 @@ class CallbackHandler(BaseHandler):
         wechat_user_info = self.wechat.get_user_info()
         self.db.save_wechat_user_info(wechat_user_info)
         self.session['union_id'] = self.wechat.union_id
+        self.session['open_id'] = self.wechat.open_id
+        self.session['access_token'] = self.wechat.access_token
         self.session['current_url'] = None
+
         self.session.save()
         self.redirect(current_url)

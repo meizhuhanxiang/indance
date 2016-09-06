@@ -22,7 +22,7 @@ class Kind(Base):
     id = Column(Integer, primary_key=True)
     purchase_id = Column(Integer, ForeignKey('purchase.id'))
     kind = Column(String(11))
-    price = Column(Float(2))
+    price = Column(Integer)
     orders = relationship('Order', backref=backref('kind'))
 
     @property
@@ -42,6 +42,8 @@ class Purchase(Base):
     start_time = Column(DateTime)
     end_time = Column(DateTime)
     body = Column(String(64))
+    begin_time = Column(DateTime)
+    place = Column(String(64))
 
     kinds = relationship('Kind', backref=backref('purchase'))
     orders = relationship('Order', backref=backref('purchase'))
@@ -61,6 +63,7 @@ class Order(Base):
     verify_count = Column(Integer)
     info = Column(String(255))
     out_trade_no = Column(String(32))
+    transaction_id = Column(String(40))
 
     def save(self):
         db.add(self)
@@ -99,7 +102,7 @@ class User(Base):
     name = Column(String(16))
     job = Column(String(30))
     company = Column(String(30))
-    phone = Column(Integer)
+    phone = Column(String(11))
     email = Column(String(30))
     wechat_no = Column(String(32))
     update_time = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
