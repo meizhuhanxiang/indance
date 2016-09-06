@@ -98,9 +98,11 @@ method: POST
 args:
 
 	{
-		"kind_id": "种类id",
-		"name":"用户名"
-		"phone":"联系方式"
+		"kind_ids": ["种类id1", "种类id2"],
+		"purchase_id":"商品id",
+		"name":"用户名",
+		"phone":"联系方式",
+		"wechat_n":"微信号"
 	}
 
 return:
