@@ -34,7 +34,9 @@ class BaseHandler(tornado.web.RequestHandler):
         self.db = InDanceDB()
 
     def on_finish(self):
-        pass
+        self.logger.info('session finished')
+        self.session.close()
+        self.logger.info('session closed')
 
     def get_need_args(self, *args):
         res = {}
@@ -42,11 +44,15 @@ class BaseHandler(tornado.web.RequestHandler):
             res[arg] = self.get_argument(arg, '')
         return res
 
-    def write_res(self, code, msg='', res={}):
+    def write_res(self, code, msg='', res=None):
         res = self.get_res(code, msg, res)
-        self.write(json.dumps(res).decode('unicode-escape'))
+        #self.write(json.dumps(res).decode('unicode-escape'))
+        self.write(json.dumps(res))
+        #self.write(res)
 
-    def get_res(self, code, msg='', res={}):
+    def get_res(self, code, msg='', res=None):
+        if not res:
+            res={}
         if not msg:
             msg = ERROR_MAP.get(code, '')
         return {'code': code, 'msg': msg, 'res': res}
