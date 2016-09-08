@@ -22,7 +22,14 @@ class ShareHandler(BaseHandler):
             if not purchase_id:
                 self.write_res(ARGUMENT_MISSING)
                 return
-            share_url = os.path.join('%s%s' % (self.wechat.share_domain, purchase_id))
+            share_url = self.session.get('index_url', '')
+            if not share_url:
+                share_url = os.path.join('%s%s' % (self.wechat.share_domain, purchase_id))
+            else:
+                share_url = os.path.join('%s%s' %(self.domain, share_url))
+            self.loger.info(share_url)
+            self.session['index_url'] = ''
+            self.session.save()
             res = self.wechat.get_menu_share_conf(share_url, self.db)
             self.loger.info(res)
             self.write_res(SUCCESS, res=res)
