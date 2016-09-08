@@ -43,10 +43,7 @@ class IndanceApplication(tornado.web.Application):
         return handlers
 
     def log_request(self, handler):
-        if handler.get_status() == 0:
-            self.logger.info(handler.get_log_info())
-        else:
-            self.logger.error(handler.get_log_info())
+        pass
 
 
 def main():
