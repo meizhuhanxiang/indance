@@ -22,13 +22,13 @@ def singleton(cls, *args, **kw):
 
 
 class BaseDB(object):
-    def __init__(self):
+    def __init__(self, conf_section):
         self.connect_info = {
-            'host': utils.config.get("preseller_mysql", "host"),
-            'user': utils.config.get("preseller_mysql", "user"),
-            'port': int(utils.config.get("preseller_mysql", "port")),
-            'passwd': utils.config.get("preseller_mysql", "passwd"),
-            'database': utils.config.get('preseller_mysql', 'database')
+            'host': utils.config.get(conf_section, "host"),
+            'user': utils.config.get(conf_section, "user"),
+            'port': int(utils.config.get(conf_section, "port")),
+            'passwd': utils.config.get(conf_section, "passwd"),
+            'database': utils.config.get(conf_section, 'database')
         }
         self.list_pool = self.create_pool('list')
         self.dict_pool = self.create_pool('dict')

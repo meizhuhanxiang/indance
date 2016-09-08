@@ -9,6 +9,7 @@ import json
 from model.indance_handler import InDanceDB
 import utils.config
 import requests
+from model.cache_handler import WechatCacheDB
 from utils.code import *
 from utils.logger import runtime_logger
 
@@ -43,6 +44,7 @@ class WeChat(object):
         self.mchid = utils.config.get('wechat', 'mchid')
         self.notify_url = utils.config.get('wechat', 'notify_url')
         self.share_domain = utils.config.get('global', 'share_domain')
+        self.cache_talbe = utils.config.get('wechat_cache', 'table')
 
     def url_get(self, urls, data=None):
         req = urllib2.Request(urls, data=data)
@@ -113,7 +115,8 @@ class WeChat(object):
         return wx_ticket
 
     def get_menu_share_conf(self, share_url, db):
-        jsapi_ticket = self.get_wx_ticket(db)
+        wechat_cache = WechatCacheDB('wechat_cache')
+        jsapi_ticket = wechat_cache.get_cache(WX_TICKET, self.cache_talbe)
         timestamps = int(time.time())
         s = 'jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s' % (jsapi_ticket, NONCESTR, timestamps, share_url)
         signature = hashlib.sha1(s).hexdigest()

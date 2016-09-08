@@ -31,7 +31,7 @@ class BaseHandler(tornado.web.RequestHandler):
         self.wechat = WeChat()
         self.domain = utils.config.get('global', 'domain')
         self.loger = runtime_logger()
-        self.db = InDanceDB()
+        self.db = InDanceDB('preseller_mysql')
 
     def on_finish(self):
         self.logger.info('session finished')
