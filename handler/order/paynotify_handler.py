@@ -14,6 +14,7 @@ from utils.code import *
 from utils.wechat import oauth
 import traceback
 import datetime
+import utils.config
 from model.models import db, Order, User, Purchase, Kind
 from handler.base.base_handler import BaseHandler
 
@@ -82,6 +83,7 @@ class PaynotifyHandler(BaseHandler):
                     kind = db.query(Kind).filter_by(id=kind_id).first()
                     kinds.append(kind.kind)
                     price += kind.price
+                template_res['urls'] = '%s%s' % (utils.config.get('global', 'notify_detail_domain'), order.out_trade_no)
                 template_res['keyword2'] = '%s(%s)' % (purchase.body, ','.join(kinds))
                 template_res['first'] = '您已报名成功, 报名费共%s元' % (price * 0.01)
                 template_res['remark'] = '届时，我们期待您的参加！'

@@ -143,13 +143,14 @@ class WeChat(object):
         keyword2 = args.get('keyword2', '')
         keyword3 = args.get('keyword3', '')
         keyword4 = args.get('keyword4', '')
+        detail_url = args.get('urls', '')
+        runtime_logger().info('detail_url:%s' % detail_url)
         remart = args.get('remark', '')
-        print 'insend_template', access_token
         urls = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s' % self.get_base_access_token(db)
         data = {
             "touser": open_id,
             "template_id": "0vii4KFKNwCc-J_SG9hLswhnxhJzq7HghXWTJPv2oZU",
-            "url": "http://test.indance.gsteps.cn/purchase/index?purchase_id=1",
+            "url": detail_url,
             "topcolor": "#FF0000",
             "data": {
                 "first": {

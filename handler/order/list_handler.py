@@ -19,11 +19,11 @@ class ListHandler(BaseHandler):
         args = self.get_need_args('out_trade_no')
         out_trade_no = args['out_trade_no']
         if not out_trade_no:
-            self.write_res(ARGUMENT_MISSING)
+            self.render('purchase/orderlist.html', **self.get_res(ARGUMENT_MISSING))
             return
         orders = db.query(Order).filter_by(out_trade_no=out_trade_no).all()
         if not orders:
-            self.write_res(ORDER_NOT_EXIST)
+            self.render('purchase/orderlist.html', **self.get_res(ORDER_NOT_EXIST))
             return
         purchase_id = ''
         total_fee = 0
@@ -38,9 +38,11 @@ class ListHandler(BaseHandler):
             user = db.query(User).filter_by(id=order.user_id).first()
             purchase = db.query(Purchase).filter_by(id=order.purchase_id).first()
         if not user or user.union_id != self.session['union_id']:
-            self.write_res(USER_NO_EXIST)
+            self.render('purchase/orderlist.html', **self.get_res(USER_NO_EXIST))
+            return
         if not purchase:
-            self.write_res(PURCHASE_NOT_EXIST)
+            self.render('purchase/orderlist.html', **self.get_res(PURCHASE_NOT_EXIST))
+            return
         unified = UnifiedOrder_pub()
         unified.setParameter('body', str(purchase.body))
         unified.setParameter('out_trade_no', str(out_trade_no))
@@ -50,7 +52,7 @@ class ListHandler(BaseHandler):
         unified.setParameter('openid', self.session['open_id'])
         jsapi_res = unified.getJSApiParameters()
         if jsapi_res['code'] != SUCCESS:
-            self.write(jsapi_res)
+            self.render('purchase/orderlist.html', **jsapi_res)
             return
         res = {
             'phone': user.phone,
@@ -64,4 +66,4 @@ class ListHandler(BaseHandler):
         }
         self.loger.info(jsapi_res)
         self.loger.info(res)
-        self.render('purchase/orderlist.html', **res)
+        self.render('purchase/orderlist.html', **self.get_res(SUCCESS, res=res))
