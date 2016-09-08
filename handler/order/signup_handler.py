@@ -53,11 +53,15 @@ class SignupHandler(BaseHandler):
                         if not order:
                             order = Order(status=0, user_id=user.id, kind_id=kind_id, purchase_id=kind.purchase_id,
                                           create_time=datetime.now(), out_trade_no=out_trade_no)
-                            order.save()
+                        else:
+                            if order.status != 1:
+                                order.out_trade_no = out_trade_no
+                        order.save()
                         # else:
                         #     order.out_trade_no = out_trade_no
                         if order.status == 1:
                             payed_kinds.append(kind.kind)
+
                         out_trade_no = order.out_trade_no
                         total_fee += kind.price
                     else:
