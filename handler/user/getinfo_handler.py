@@ -3,6 +3,7 @@ import requests
 import utils.config
 from utils.code import *
 from utils.wechat import oauth
+import traceback
 from handler.base.base_handler import BaseHandler
 
 requests.packages.urllib3.disable_warnings()
@@ -12,7 +13,7 @@ __email__ = 'ggc0402@qq.com'
 APPID = utils.config.get('wechat', 'appid')
 APPSECRET = utils.config.get('wechat', 'appsecret')
 
-
+traceback.format_exc()
 class GetinfoHandler(BaseHandler):
     @oauth
     def post(self):

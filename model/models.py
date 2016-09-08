@@ -64,6 +64,7 @@ class Order(Base):
     info = Column(String(255))
     out_trade_no = Column(String(32))
     transaction_id = Column(String(40))
+    notified = Column(Integer)
 
     def save(self):
         db.add(self)

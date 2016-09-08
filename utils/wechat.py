@@ -115,8 +115,10 @@ class WeChat(object):
         return wx_ticket
 
     def get_menu_share_conf(self, share_url, db):
+        runtime_logger().info('jsapi_ticket:---------------')
         wechat_cache = WechatCacheDB('wechat_cache')
         jsapi_ticket = wechat_cache.get_cache(WX_TICKET, self.cache_talbe)
+        runtime_logger().info('jsapi_ticket:%s' % jsapi_ticket)
         timestamps = int(time.time())
         s = 'jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s' % (jsapi_ticket, NONCESTR, timestamps, share_url)
         signature = hashlib.sha1(s).hexdigest()
@@ -149,7 +151,10 @@ class WeChat(object):
         detail_url = args.get('urls', '')
         runtime_logger().info('detail_url:%s' % detail_url)
         remart = args.get('remark', '')
-        urls = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s' % self.get_base_access_token(db)
+        wechat_cache = WechatCacheDB('wechat_cache')
+        base_token = wechat_cache.get_cache(BASE_TOKEN, self.cache_talbe)
+        runtime_logger().info('base_token:%s' % base_token)
+        urls = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s' % base_token
         data = {
             "touser": open_id,
             "template_id": "0vii4KFKNwCc-J_SG9hLswhnxhJzq7HghXWTJPv2oZU",
