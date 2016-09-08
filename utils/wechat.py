@@ -112,16 +112,16 @@ class WeChat(object):
                 db.save_cache(wx_ticket, WX_TICKET)
         return wx_ticket
 
-    def get_menu_share_conf(self, url, db):
+    def get_menu_share_conf(self, share_url, db):
         jsapi_ticket = self.get_wx_ticket(db)
         timestamps = int(time.time())
-        s = 'jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s' % (jsapi_ticket, NONCESTR, timestamps, url)
+        s = 'jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s' % (jsapi_ticket, NONCESTR, timestamps, share_url)
         signature = hashlib.sha1(s).hexdigest()
         return json.dumps({'appid': self.appid,
                            'timestamp': timestamps,
                            'noncestr': NONCESTR,
                            'signature': signature,
-                           'link': url,
+                           'link': share_url,
                            'js_api_list': ['onMenuShareTimeline', 'onMenuShareAppMessage'],
                            'signature_decode': s
                            })

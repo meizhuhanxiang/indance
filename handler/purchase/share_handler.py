@@ -23,9 +23,7 @@ class ShareHandler(BaseHandler):
                 self.write_res(ARGUMENT_MISSING)
                 return
             share_url = os.path.join('%s%s' % (self.wechat.share_domain, purchase_id))
-            self.loger.info('in purchase_share: 1')
             res = self.wechat.get_menu_share_conf(share_url, self.db)
-            self.loger.info('in purchase_share: 2')
             self.loger.info(res)
             self.write_res(SUCCESS, res=res)
             self.loger.info('in purchase_share: success')

@@ -44,7 +44,7 @@ class ListHandler(BaseHandler):
             self.render('purchase/orderlist.html', **self.get_res(PURCHASE_NOT_EXIST))
             return
         unified = UnifiedOrder_pub()
-        unified.setParameter('body', str(purchase.body))
+        unified.setParameter('body', '%s(%s)' % (purchase.body, ', '.join(kinds)))
         unified.setParameter('out_trade_no', str(out_trade_no))
         unified.setParameter('total_fee', str(total_fee))
         unified.setParameter('notify_url', self.wechat.notify_url)
