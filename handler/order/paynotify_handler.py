@@ -39,6 +39,7 @@ from handler.base.base_handler import BaseHandler
 
 class PaynotifyHandler(BaseHandler):
     def post(self):
+        runtime_logger().info('in PaynotifyHandler') 
         wechat_server_notify = Wxpay_server_pub()
         wechat_server_notify.saveData(self.request.body)
         if not wechat_server_notify.checkSign():
